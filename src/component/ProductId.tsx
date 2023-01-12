@@ -10,6 +10,7 @@ export const ProductId: React.FC<Props> = ({ product }) => {
     id,
     name,
     category,
+    owner,
   } = product;
 
   return (
@@ -28,11 +29,11 @@ export const ProductId: React.FC<Props> = ({ product }) => {
       <td
         data-cy="ProductUser"
         className={cn({
-          'has-text-link': category.owner.sex === 'm',
-          'has-text-danger': category.owner.sex === 'f',
+          'has-text-link': owner.sex === 'm',
+          'has-text-danger': owner.sex === 'f',
         })}
       >
-        { category?.owner.name }
+        { owner.name }
       </td>
     </tr>
   );
