@@ -1,9 +1,27 @@
 import React from 'react';
 import './App.scss';
+// import { User, Products, Categories, CategoriesWithProducts } from './types/types';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+
+const findProductById = (id: number) => (
+  productsFromServer.find(el => el.categoryId === id)
+);
+
+const categoryWithProducts = categoriesFromServer.map(el => ({
+  ...el,
+  product: findProductById(el.id),
+}));
+
+const findUserWithProducts = (id: number) => (
+  categoryWithProducts.find(el => el.ownerId === id)
+);
+const userWithProducts = usersFromServer.map(el => ({
+  ...el,
+  category: findUserWithProducts(el.id),
+}));
 
 export const App: React.FC = () => {
   return (
@@ -23,27 +41,15 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
+              {userWithProducts.map(el => (
+                <a
+                  data-cy="FilterAllUsers"
+                  href="id"
+                >
+                  {el.name}
+                </a>
+              ))}
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
             </p>
 
             <div className="panel-block">
