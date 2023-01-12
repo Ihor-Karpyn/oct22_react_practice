@@ -1,11 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+
+import { Category, User } from './api/Types/Type';
+import { StringOfTable } from './Components/StringOfTable';
+
+const findCategoryById = (categoryId: number) => {
+  return categoriesFromServer.find(category => (
+    categoryId === category.id)) as Category;
+};
+
+const findUserById = (userId: number) => {
+  return usersFromServer.find(user => userId === user.id) as User;
+};
+
+const productWithCategory = productsFromServer.map(product => {
+  return {
+    ...product,
+    category: findCategoryById(product.categoryId),
+  };
+});
+
+const productWithCategoryWithUser = productWithCategory.map(product => {
+  return {
+    ...product,
+    user: findUserById(product.category.ownerId),
+  };
+});
 
 export const App: React.FC = () => {
+  const [products] = useState(productWithCategoryWithUser);
+
+  const [query, setQuery] = useState('');
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.currentTarget.value);
+  };
+
+  // const visibleProducts = productWithCategoryWithUser.filter(product => {
+  //   const normalizedQuery = query.trim().toLowerCase();
+
+  //   return (
+  //     product.name.includes(normalizedQuery)
+  //   );
+  // });
+
   return (
     <div className="section">
       <div className="container">
@@ -51,9 +93,11 @@ export const App: React.FC = () => {
                 <input
                   data-cy="SearchField"
                   type="text"
+                  id="search-query"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={handleChange}
                 />
 
                 <span className="icon is-left">
@@ -187,53 +231,10 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {products.map(product => (
+                <StringOfTable product={product} key={product.id} />
+              ))}
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
             </tbody>
           </table>
         </div>
