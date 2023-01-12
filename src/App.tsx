@@ -4,8 +4,100 @@ import './App.scss';
 // import usersFromServer from './api/users';
 // import productsFromServer from './api/products';
 // import categoriesFromServer from './api/categories';
+// import categories from './api/categories';
+// import users from './api/users';
+
+// enum SortType {
+//   NONE,
+//   GROCERY,
+//   DRINKS,
+//   FRUITS,
+//   ELECTRONICS,
+//   CLOTHES,
+//   BYUSER,
+// }
+
+// export interface User {
+//   id: number,
+//   sex: string,
+// }
+
+// export interface Categories {
+//   id: number,
+//   title: string,
+//   icon: string,
+//   ownerId: string,
+// }
+
+// export interface Products {
+//   id: number,
+//   name: string,
+//   category: string,
+// }
+
+// export interface FullList {
+//   userId: number,
+//   usersSex: string,
+//   categoriesId: number,
+//   categoriesIcon: string,
+//   productsId: number,
+//   productsName: string,
+// }
+
+// type Reorder = {
+//   sortType: SortType,
+//   isSelected: boolean,
+// };
+
+// export function getReorderedList(
+//   products: string[],
+//   { sortType, isSelected }: Reorder,
+// ) {
+//   const visibleProducts = [...productsFromServer];
+
+//   switch (sortType) {
+//     case SortType.NONE:
+//       break;
+
+//     case SortType.GROCERY:
+//       productsFromServer.map(categories => ({
+//         // categories.title === 'Grocery'
+//       }));
+//       break;
+
+//     case SortType.CLOTHES:
+//       productsFromServer.map(categories => ({
+//         // categories.title === 'Clothes'
+//       }));
+//       break;
+
+//     case SortType.DRINKS:
+//       productsFromServer.map(categories => ({
+//         // categories.title === 'Drinks'
+//       }));
+//       break;
+
+//     case SortType.ELECTRONICS:
+//       productsFromServer.map(categories => ({
+//         // categories.title === 'Electronics'
+//       }));
+//       break;
+
+//     case SortType.FRUITS:
+//       productsFromServer.map(categories => ({
+//         // categories.title === 'Fruits'
+//       }));
+//       break;
+
+//     default: break;
+//   }
+
+//   return visibleProducts;
+// } first thoughts
 
 export const App: React.FC = () => {
+  // the second
+
   return (
     <div className="section">
       <div className="container">
