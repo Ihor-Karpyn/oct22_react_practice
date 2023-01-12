@@ -1,13 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import cn from 'classnames';
 
 import usersFromServer from './api/users';
 import productsFromServer from './api/products';
 import categoriesFromServer from './api/categories';
-// import { Category } from './Types/Category';
-// import { User } from './Types/User';
-// import { Product } from './Types/Products';
 
 function getCategoryById(categoryId: number) {
   return categoriesFromServer.find(
@@ -32,6 +29,20 @@ export const preparedProducts = productsFromServer.map(product => {
 });
 
 export const App: React.FC = () => {
+  const [query, setQuery] = useState('');
+
+  const searchResultsProducts = preparedProducts.filter(product => {
+    const ProductName = product.name.toLowerCase();
+
+    const normalizedOuery = query
+      .toLowerCase()
+      .trim();
+
+    return (
+      ProductName.includes(normalizedOuery)
+    );
+  });
+
   return (
     <div className="section">
       <div className="container">
@@ -48,28 +59,14 @@ export const App: React.FC = () => {
               >
                 All
               </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -79,7 +76,10 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={(event) => {
+                    setQuery(event.target.value);
+                  }}
                 />
 
                 <span className="icon is-left">
@@ -213,7 +213,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {preparedProducts.map(product => (
+              {searchResultsProducts.map(product => (
                 <tr data-cy="Product">
                   <td
                     className="has-text-weight-bold"
