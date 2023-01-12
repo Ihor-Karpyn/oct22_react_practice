@@ -3,7 +3,6 @@ import cn from 'classnames';
 
 import './App.scss';
 
-import { ALL } from 'dns';
 import usersFromServer from './api/users';
 import productsFromServer from './api/products';
 import categoriesFromServer from './api/categories';
@@ -41,18 +40,22 @@ const productsWithCategoryAndUser = productsWithCategory.map(product => {
 export const App: React.FC = () => {
   const [products] = useState(productsWithCategoryAndUser);
   const [filterBy, setFilterBy] = useState('All');
+  const [query, setQuery] = useState('');
 
-  const filterByUser = () => {
+  const filterProducts = () => {
+    const normalizedQuery = query.toLowerCase().trim();
+
     return products.filter(product => {
       if (filterBy === 'All') {
-        return product;
+        return product?.name.toLowerCase().includes(normalizedQuery);
       }
 
-      return product?.user.name === filterBy;
+      return product?.user.name === filterBy
+        && product?.name.toLowerCase().includes(normalizedQuery);
     });
   };
 
-  const visibleProducts = filterByUser();
+  const visibleProducts = filterProducts();
 
   return (
     <div className="section">
@@ -97,7 +100,8 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={event => setQuery(event.currentTarget.value)}
                 />
 
                 <span className="icon is-left">
@@ -105,12 +109,15 @@ export const App: React.FC = () => {
                 </span>
 
                 <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {query && (
+                    // eslint-disable-next-line jsx-a11y/control-has-associated-label
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setQuery('')}
+                    />
+                  )}
                 </span>
               </p>
             </div>
