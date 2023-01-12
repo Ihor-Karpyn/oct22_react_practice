@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 // import { User, Products, Categories, CategoriesWithProducts } from './types/types';
 
@@ -24,6 +24,17 @@ const userWithProducts = usersFromServer.map(el => ({
 }));
 
 export const App: React.FC = () => {
+  const [users, setUsers] = useState(userWithProducts)
+  const [query, setQuery] = useState('')
+
+  let visibleUsers = userWithProducts;
+
+  if (query) {
+    const lowerQuery = query.toLocaleLowerCase();
+
+    visibleUsers = userWithProducts.filter(el => el.name.includes(lowerQuery))
+  }
+
   return (
     <div className="section">
       <div className="container">
@@ -59,7 +70,8 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={el => setQuery(el.target.value)}
                 />
 
                 <span className="icon is-left">
@@ -86,7 +98,7 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              {categoryWithProducts.map(el =>
+              {categoryWithProducts.map(el => (
                 <a
                   data-cy="Category"
                   className="button mr-2 my-1 is-info"
@@ -94,7 +106,7 @@ export const App: React.FC = () => {
                 >
                   {el.title}
                 </a>
-              )}
+              ))}
             </div>
 
             <div className="panel-block">
