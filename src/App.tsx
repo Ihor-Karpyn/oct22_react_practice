@@ -49,6 +49,7 @@ const products: Product[] = productsFromServer.map(product => ({
 
 export const App: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState('All');
+  const [query, setQuery] = useState('');
 
   const selectNewUser = (userName: string) => {
     if (userName !== selectedUser) {
@@ -56,9 +57,29 @@ export const App: React.FC = () => {
     }
   };
 
-  const visidleProducts: Product[] = products.filter(product => (
+  let visidleProducts: Product[] = products.filter(product => (
     selectedUser === 'All' || product.category?.owner?.name === selectedUser
   ));
+
+  visidleProducts = visidleProducts.filter(product => {
+    const productName = product.name.toLowerCase();
+
+    const normalizedQuery = query
+      .split(' ')
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return productName.includes(normalizedQuery);
+  });
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
+  const clearInput = () => {
+    setQuery('');
+  };
 
   return (
     <div className="section">
@@ -103,21 +124,25 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={handleChange}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {query && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={clearInput}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
