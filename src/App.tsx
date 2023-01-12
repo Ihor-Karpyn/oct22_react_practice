@@ -1,11 +1,21 @@
-import React from 'react';
+import { FC, useState } from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import classNames from 'classnames';
 
-export const App: React.FC = () => {
+import usersFromServer from './api/users';
+
+import { getFullProducts } from './helpers/helpers';
+// import { User } from './types/User';
+
+export const App: FC = () => {
+  const [products] = useState(getFullProducts);
+  const [selectedUser] = useState({ ...usersFromServer });
+
+  // const selectUser = (user: User): void => {
+  //   setSelectedUser({ user });
+  // };
+
   return (
     <div className="section">
       <div className="container">
@@ -23,27 +33,21 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  key={user.id}
+                  data-cy="FilterUser"
+                  href="#/"
+                  className={classNames(
+                    {
+                      'is-active': user.id === selectedUser[0].id,
+                    },
+                  )}
+                  // onClick={() => selectUser(user)}
+                >
+                  {`User ${user.id}`}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -126,9 +130,11 @@ export const App: React.FC = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No products matching selected criteria
-          </p>
+          {/* {cond1 && (
+            <p data-cy="NoMatchingMessage">
+              No products matching selected criteria
+            </p>
+          )} */}
 
           <table
             data-cy="ProductTable"
@@ -187,53 +193,28 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {products.map(product => (
+                <tr data-cy="Product" key={product.id}>
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {product.id}
+                  </td>
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                  <td data-cy="ProductName">{product.name}</td>
+                  <td data-cy="ProductCategory">{`${product.category?.icon} - ${product.category?.title}`}</td>
 
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
+                  <td
+                    data-cy="ProductUser"
+                    className={classNames(
+                      {
+                        'has-text-link': product.user?.sex === 'm',
+                        'has-text-danger': product.user?.sex === 'f',
+                      },
+                    )}
+                  >
+                    {product.user?.name}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
