@@ -26,11 +26,16 @@ const mappedProducts: Product[] = productsFromServer.map(product => ({
 export const App: React.FC = () => {
   const [products] = useState(mappedProducts);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUserName, setSelectedUserName] = useState('All');
+  const [selectedUserId, setSelectedUserId] = useState(0);
 
-  const visibleProducts = products.filter(product => (
-    product.name.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())
+  let visibleProducts = products.filter(product => (
+    product.name.toLocaleLowerCase()
+      .includes(searchQuery.toLocaleLowerCase())
   ));
+
+  visibleProducts = visibleProducts
+    .filter(product => (product.category?.ownerId
+        === (selectedUserId || product.category?.ownerId)));
 
   return (
     <div className="section">
@@ -45,6 +50,14 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={cn(
+                  {
+                    'is-active': selectedUserId === 0,
+                  },
+                )}
+                onClick={() => {
+                  setSelectedUserId(0);
+                }}
               >
                 All
               </a>
@@ -56,13 +69,11 @@ export const App: React.FC = () => {
                   href="#/"
                   className={cn(
                     {
-                      'is-active': selectedUserName === user.name,
+                      'is-active': selectedUserId === user.id,
                     },
                   )}
                   onClick={() => {
-                    if (user.name !== selectedUserName) {
-                      setSelectedUserName(user.name);
-                    }
+                    setSelectedUserId(user.id);
                   }}
                 >
                   {user.name}
@@ -235,53 +246,6 @@ export const App: React.FC = () => {
                   </td>
                 </tr>
               ))}
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
-
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
             </tbody>
           </table>
         </div>
