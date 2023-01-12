@@ -43,6 +43,10 @@ export const App: React.FC = () => {
     );
   });
 
+  const reset = () => {
+    setQuery('');
+  };
+
   return (
     <div className="section">
       <div className="container">
@@ -142,8 +146,8 @@ export const App: React.FC = () => {
               <a
                 data-cy="ResetAllButton"
                 href="#/"
+                onClick={reset}
                 className="button is-link is-outlined is-fullwidth"
-
               >
                 Reset all filters
               </a>
