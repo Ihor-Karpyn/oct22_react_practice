@@ -26,6 +26,7 @@ const products: Product[] = productsFromServer.map(product => {
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [userName, setUserName] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const searchTextByQuery = (text: string) => {
     const preparedQuery = query.toLowerCase().trim();
@@ -35,8 +36,10 @@ export const App: React.FC = () => {
 
   const visibleProducts = products.filter(product => {
     const checkUser = userName ? product.owner.name === userName : true;
+    const checkCategory = selectedCategories.length
+      ? selectedCategories.includes(product.category.title) : true;
 
-    return searchTextByQuery(product.name) && checkUser;
+    return searchTextByQuery(product.name) && checkUser && checkCategory;
   });
 
   return (
@@ -110,41 +113,40 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className={classNames('button is-success mr-6 is-outlined')}
+                onClick={() => setSelectedCategories([])}
               >
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
+              {categoriesFromServer.map(category => (
+                <a
+                  data-cy="Category"
+                  className={classNames('button mr-2 my-1', {
+                    'is-info': selectedCategories.includes(category.title),
+                  })}
+                  href="#/"
+                  onClick={(event: React.BaseSyntheticEvent) => {
+                    event.preventDefault();
+                    if (selectedCategories.includes(category.title)) {
+                      setSelectedCategories(
+                        selectedCategories.filter(
+                          categoryName => categoryName !== category.title,
+                        ),
+                      );
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
+                      return;
+                    }
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+                    setSelectedCategories(
+                      [...selectedCategories, category.title],
+                    );
+                  }}
+                >
+                  {category.title}
+                </a>
+              ))}
+
             </div>
 
             <div className="panel-block">
