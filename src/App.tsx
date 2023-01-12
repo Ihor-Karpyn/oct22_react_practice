@@ -28,6 +28,10 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUserName, setSelectedUserName] = useState('All');
 
+  const visibleProducts = products.filter(product => (
+    product.name.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())
+  ));
+
   return (
     <div className="section">
       <div className="container">
@@ -208,7 +212,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {products.map(product => (
+              {visibleProducts.map(product => (
                 <tr data-cy="Product">
                   <td className="has-text-weight-bold" data-cy="ProductId">
                     {product.id}
