@@ -22,9 +22,9 @@ const category = categoriesFromServer.map(categ => ({
 }));
 
 export const App: React.FC = () => {
-  /* const selectedUser = (selectedUserId: number) => (
+  /* const selectedUser = (id: number) => (
     usersFromServer.find(
-      user => user.id === selectedUserId,
+      user => user.id === id,
     ) || usersFromServer[0]
   );
 
@@ -55,7 +55,9 @@ export const App: React.FC = () => {
                 <a
                   data-cy="FilterUser"
                   href="#/"
-                  className="is-active"
+                  /* className={className(
+                    { 'is-active': selectedUser.id === user.id },
+                  )} */
                 >
                   {user.name}
                 </a>
@@ -99,35 +101,14 @@ export const App: React.FC = () => {
               {categoriesFromServer.map(categ => (
                 <a
                   data-cy="Category"
-                  className="button mr-2 my-1 is-info"
+                  className="button mr-2 my-1"/* className={className(
+                    { 'is-active': selectedUser.id === user.id },
+                  )} */
                   href="#/"
                 >
                   {categ.title}
                 </a>
               ))}
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
             </div>
 
             <div className="panel-block">
