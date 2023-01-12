@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
 import usersFromServer from './api/users';
@@ -34,10 +34,10 @@ const productForUser: Product[] = productsFromServer.map(product => (
 ));
 
 export const App: React.FC<Product> = () => {
-  // const [products] = useState(productForUser);
-  //
-  // const uniqueUser = new Set(products.map(product => product.category?.user));
-  // const users = Array.from(uniqueUser);
+  const [products] = useState(productForUser);
+
+  const uniqueUser = new Set(products.map(product => product.category?.user));
+  const users = Array.from(uniqueUser);
 
   // const visibleProducts = products.filter(product => product.category)
 
@@ -58,15 +58,15 @@ export const App: React.FC<Product> = () => {
                 All
               </a>
 
-              {/* {users.map(user => ( */}
-              {/*   <a */}
-              {/*     data-cy="FilterUser" */}
-              {/*     href="#/" */}
-              {/*     key={user?.id} */}
-              {/*   > */}
-              {/*     {user?.name} */}
-              {/*   </a> */}
-              {/* ))} */}
+              {users.map(user => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                  key={user?.id}
+                >
+                  {user?.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
