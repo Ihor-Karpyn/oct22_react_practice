@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
+import classNames from 'classnames';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+// import { User, Product } from './types/types';
 
 export const App: React.FC = () => {
+  const [visibility] = useState(false);
+  // const [users, setUsers] = useState('');
+  // const [categories, setCategories] = useState('');
+  // const [products, setProducts] = useState('');
+
+  // function findUserById(userId: number): User | null {
+  //   return usersFromServer.find(user => user.id === userId) || null;
+  // }
+
+  // function findProductById(productId: number): Product | null {
+  //   return productsFromServer.find(product => product.id === productId)
+  //   || null;
+  // }
+
+  // const findCategoryById = categoriesFromServer.find(
+  //   category => category.id === productsFromServer.filter(item => item.id));
+
   return (
     <div className="section">
       <div className="container">
@@ -23,27 +42,15 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  key={user.id}
+                  data-cy="FilterUser"
+                  href={`#${user.id}`}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -80,36 +87,19 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {categoriesFromServer.map(category => (
+                <a
+                  key={category.id}
+                  data-cy="Category"
+                  className={classNames(
+                    { 'button mr-2 my-1': !visibility },
+                    { 'is-info': visibility },
+                  )}
+                  href={`#${category.id}`}
+                >
+                  {category.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
@@ -187,23 +177,32 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {productsFromServer.map(product => (
+                <tr data-cy="Product">
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {product.id}
+                  </td>
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                  <td data-cy="ProductName">{product.name}</td>
+                  {categoriesFromServer.map(item => (
+                    <td data-cy="ProductCategory">
+                      {item.icon}
+                    </td>
+                  ))}
+                  {product.name}
 
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
+                  {usersFromServer.map(userName => (
+                    <td
+                      data-cy="ProductUser"
+                      className="has-text-link"
+                    >
+                      {userName.name}
+                    </td>
+                  ))}
+                </tr>
+              ))}
 
-              <tr data-cy="Product">
+              {/* <tr data-cy="Product">
                 <td className="has-text-weight-bold" data-cy="ProductId">
                   2
                 </td>
@@ -233,7 +232,7 @@ export const App: React.FC = () => {
                 >
                   Roma
                 </td>
-              </tr>
+              </tr> */}
             </tbody>
           </table>
         </div>
