@@ -81,6 +81,11 @@ export const App: React.FC = () => {
     setQuery('');
   };
 
+  const clearAll = () => {
+    setSelectedUser('All');
+    setQuery('');
+  };
+
   return (
     <div className="section">
       <div className="container">
@@ -192,6 +197,7 @@ export const App: React.FC = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                onClick={clearAll}
 
               >
                 Reset all filters
@@ -201,9 +207,12 @@ export const App: React.FC = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No products matching selected criteria
-          </p>
+
+          {!visidleProducts.length && (
+            <p data-cy="NoMatchingMessage">
+              No products matching selected criteria
+            </p>
+          )}
 
           <table
             data-cy="ProductTable"
