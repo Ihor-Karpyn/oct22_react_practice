@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
 
@@ -23,6 +24,10 @@ const mappedProducts: Product[] = productsFromServer.map(product => ({
 }));
 
 export const App: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [products, setProducts] = useState(mappedProducts);
+  const [selectedUserName, setSelectedUserName] = useState('All');
+
   return (
     <div className="section">
       <div className="container">
@@ -40,27 +45,25 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {mappedUsers.map(user => (
+                <a
+                  key={user.id}
+                  data-cy="FilterUser"
+                  href="#/"
+                  className={cn(
+                    {
+                      'is-active': selectedUserName === user.name,
+                    },
+                  )}
+                  onClick={() => {
+                    if (user.name !== selectedUserName) {
+                      setSelectedUserName(user.name);
+                    }
+                  }}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -204,7 +207,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {mappedProducts.map(product => (
+              {products.map(product => (
                 <tr data-cy="Product">
                   <td className="has-text-weight-bold" data-cy="ProductId">
                     {product.id}
