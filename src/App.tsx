@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+
+import { User } from './types/user';
+import { Product } from './types/product';
+import { Category } from './types/category';
+import { PreparedProduct } from './types/preparedProduct';
+import products from './api/products';
+
+function getUserById(userId: number) {
+  return usersFromServer.find(user => user.id === userId) || null;
+}
+
+function getProdByCategoryId(categoryId: number) {
+  return productsFromServer
+    .filter(product => product.categoryId === categoryId) || null;
+}
+
+const preparedProduct: Category[] = categoriesFromServer.map(category => ({
+  ...category,
+  user: getUserById(category.ownerId),
+  product: getProdByCategoryId(category.id),
+}));
 
 export const App: React.FC = () => {
+  const [products, setProducts] = useState(preparedProduct);
+
   return (
     <div className="section">
       <div className="container">
@@ -22,15 +45,15 @@ export const App: React.FC = () => {
               >
                 All
               </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
+              {usersFromServer.map(user => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                >
+                  {user.name}
+                </a>
+              ))}
+              {/* <a
                 data-cy="FilterUser"
                 href="#/"
                 className="is-active"
@@ -43,7 +66,7 @@ export const App: React.FC = () => {
                 href="#/"
               >
                 User 3
-              </a>
+              </a> */}
             </p>
 
             <div className="panel-block">
