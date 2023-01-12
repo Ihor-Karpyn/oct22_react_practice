@@ -1,9 +1,38 @@
 import React from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+
+import { Users } from './types/Users';
+import { Categories } from './types/Categories';
+import { Products } from './types/Products';
+
+function findUserById(userId: number): Users | null {
+  return usersFromServer.find(user => user.id === userId) || null;
+}
+
+const preparedCategories: Categories[] = categoriesFromServer.map(category => (
+  {
+    ...category,
+    user: findUserById(category.ownerId),
+  }
+));
+
+function findCategoryById(categoryId: number): Categories | null {
+  return preparedCategories.find(category => (
+    category.id === categoryId
+  )) || null;
+}
+
+const preparedProducts: Product[] = productsFromServer.map(product => (
+  {
+    ...product,
+    category: findCategoryById(product.categoryId),
+  }
+));
+
 
 export const App: React.FC = () => {
   return (
