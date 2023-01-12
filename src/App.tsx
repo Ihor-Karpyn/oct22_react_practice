@@ -29,12 +29,12 @@ const productsWithCategory = productsFromServer.map(product => {
 
 // eslint-disable-next-line array-callback-return, consistent-return
 const productsWithCategoryAndUser = productsWithCategory.map(product => {
-  if (product.category) {
-    return {
-      ...product,
-      user: findUserById(product.category?.ownerId),
-    };
-  }
+  // if (product.category) {
+  return {
+    ...product,
+    user: findUserById(product.category?.ownerId),
+  };
+  // }
 });
 
 export const App: React.FC = () => {
