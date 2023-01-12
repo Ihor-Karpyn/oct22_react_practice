@@ -1,11 +1,76 @@
-import React from 'react';
+import cn from 'classnames';
+import React, { useState } from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+
+import { User } from './types/User';
+import { Category } from './types/Category';
+import { Product } from './types/Product';
+
+function findUserById(userId: number): User | null {
+  return usersFromServer.find(user => user.id === userId) || null;
+}
+
+const preparedCategories: Category[] = categoriesFromServer.map(category => (
+  {
+    ...category,
+    user: findUserById(category.ownerId),
+  }
+));
+
+function findCategoryById(categoryId: number): Category | null {
+  return preparedCategories.find(category => (
+    category.id === categoryId
+  )) || null;
+}
+
+const preparedProducts: Product[] = productsFromServer.map(product => (
+  {
+    ...product,
+    category: findCategoryById(product.categoryId),
+  }
+));
 
 export const App: React.FC = () => {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [products, setProducts] = useState(preparedProducts);
+  const [query, setQuery] = useState('');
+  const [currentCategory,
+    setCurrentCategory,
+  ] = useState<number[] >([]);
+
+  const handleUserFilter = (user: User) => {
+    const filteredProducts = preparedProducts.filter(product => (
+      product.category?.user?.id === user.id
+    ));
+
+    setCurrentUser(user);
+    setProducts(filteredProducts);
+  };
+
+  const handleQueryFilter = (search : string) => {
+    const filteredProducts = preparedProducts.filter(product => (
+      (product.name).toLowerCase().includes(search.toLowerCase())
+      || (product.category?.title)?.toLowerCase().includes(search.toLowerCase())
+      || (product.category?.user?.name)?.toLowerCase()
+        .includes(search.toLowerCase())
+    ));
+
+    return filteredProducts;
+  };
+
+  // const handleCategory = (event) => {
+  //
+  // };
+
+  const showAll = () => {
+    setCurrentUser(null);
+    setProducts(preparedProducts);
+  };
+
   return (
     <div className="section">
       <div className="container">
@@ -19,31 +84,29 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={cn({
+                  'is-active': currentUser === null,
+                })}
+                onClick={showAll}
               >
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map((user) => {
+                return (
+                  <a
+                    key={user.id}
+                    data-cy="FilterUser"
+                    href="#/"
+                    className={cn({
+                      'is-active': currentUser?.id === user.id,
+                    })}
+                    onClick={() => handleUserFilter(user)}
+                  >
+                    {user.name}
+                  </a>
+                );
+              })}
             </p>
 
             <div className="panel-block">
@@ -53,21 +116,33 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={(event) => {
+                    setProducts(handleQueryFilter(event.target.value));
+                    setQuery(event.target.value);
+                  }}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {
+                  query && (
+                    <span className="icon is-right">
+                      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                      <button
+                        data-cy="ClearButton"
+                        type="button"
+                        className="delete"
+                        onClick={() => {
+                          setQuery('');
+                          setProducts(preparedProducts);
+                        }}
+                      />
+                    </span>
+                  )
+                }
               </p>
             </div>
 
@@ -80,44 +155,51 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
+              {categoriesFromServer.map((category) => {
+                return (
+                  <a
+                    key={category.id}
+                    data-cy="Category"
+                    className={cn(
+                      'button mr-2 my-1',
+                      {
+                        'is-info': currentCategory.includes(category.id),
+                      },
+                    )}
+                    href="#/"
+                    onClick={() => {
+                      if (currentCategory.includes(category.id)) {
+                        setCurrentCategory((prev) => {
+                          return [...prev.filter((id) => id !== category.id)];
+                        });
+                      }
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+                      if (!currentCategory.includes(category.id)) {
+                        setCurrentCategory((prev) => {
+                          return [...prev, category.id];
+                        });
+                      }
+                    }}
+                  >
+                    {category.title}
+                  </a>
+                );
+              })}
             </div>
 
             <div className="panel-block">
               <a
                 data-cy="ResetAllButton"
                 href="#/"
-                className="button is-link is-outlined is-fullwidth"
-
+                onClick={() => {
+                  setCurrentCategory([]);
+                }}
+                className={cn(
+                  'button is-link is-fullwidth',
+                  {
+                    'is-outlined': !currentCategory.length,
+                  },
+                )}
               >
                 Reset all filters
               </a>
@@ -187,53 +269,28 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {products.map(product => (
+                <tr data-cy="Product" key={product.id}>
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {product.id}
+                  </td>
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                  <td data-cy="ProductName">{product.name}</td>
+                  <td data-cy="ProductCategory">{`${product.category?.icon} - ${product.category?.title}`}</td>
 
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
+                  <td
+                    data-cy="ProductUser"
+                    className={cn(
+                      {
+                        'has-text-link': product.category?.user?.sex === 'm',
+                        'has-text-danger': product.category?.user?.sex === 'f',
+                      },
+                    )}
+                  >
+                    {product.category?.user?.name}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
