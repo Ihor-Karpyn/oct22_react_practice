@@ -1,9 +1,51 @@
 import React from 'react';
+import cn from 'classnames';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+
+interface Product {
+  id: number,
+  name: string,
+  categoryId: number,
+  category: Category | null,
+}
+
+interface Category {
+  id: number,
+  title: string,
+  icon: string,
+  ownerId: number,
+  owner: User | null,
+}
+
+interface User {
+  id: number,
+  name: string,
+  sex: string,
+}
+function getOwnerById(ownerId: number): User | null {
+  return usersFromServer
+    .find(owner => ownerId === owner.id) || null;
+}
+
+const categories: Category[] = categoriesFromServer.map(category => ({
+  ...category,
+  owner: getOwnerById(category.ownerId),
+}));
+
+function getCategoryById(categoryId: number): Category | null {
+  return categories
+    .find(category => categoryId === category.id) || null;
+}
+
+const products: Product[] = productsFromServer.map(product => ({
+  ...product,
+  category: getCategoryById(product.categoryId),
+}
+));
 
 export const App: React.FC = () => {
   return (
@@ -187,53 +229,30 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {products.map(product => (
+                <tr data-cy="Product" key={product.id}>
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {product.id}
+                  </td>
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                  <td data-cy="ProductName">{product.name}</td>
+                  <td data-cy="ProductCategory">
+                    {`${product.category?.icon} - ${product.category?.title}`}
+                  </td>
 
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
+                  <td
+                    data-cy="ProductUser"
+                    className={cn(
+                      { 'has-text-link': product.category?.owner?.sex === 'm' },
+                      {
+                        'has-text-danger': product.category?.owner?.sex === 'f',
+                      },
+                    )}
+                  >
+                    {product.category?.owner?.name}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
