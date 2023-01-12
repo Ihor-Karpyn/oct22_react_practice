@@ -26,6 +26,19 @@ const products: TotalProducts[] = productsFromServer.map(product => {
 });
 
 export const App: React.FC = () => {
+  /* const [filterUser, setFilterUser] = useState(1);
+  const [filterSearch, setFilterSearch] = useState('');
+
+  const visibleProducts = products.filter(
+    product => {
+      const NormalizedProductName = product.name.toLowerCase();
+
+      return (product.category?.ownerId === filterUser
+        && NormalizedProductName.includes(filterSearch.toLowerCase())
+      );
+    },
+  ); */
+
   return (
     <div className="section">
       <div className="container">
