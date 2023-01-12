@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
 
@@ -48,6 +48,18 @@ const products: Product[] = productsFromServer.map(product => ({
 ));
 
 export const App: React.FC = () => {
+  const [selectedUser, setSelectedUser] = useState('All');
+
+  const selectNewUser = (userName: string) => {
+    if (userName !== selectedUser) {
+      setSelectedUser(userName);
+    }
+  };
+
+  const visidleProducts: Product[] = products.filter(product => (
+    selectedUser === 'All' || product.category?.owner?.name === selectedUser
+  ));
+
   return (
     <div className="section">
       <div className="container">
@@ -61,31 +73,27 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={cn(
+                  { 'is-active': selectedUser === 'All' },
+                )}
+                onClick={() => selectNewUser('All')}
               >
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                  key={user.id}
+                  className={cn(
+                    { 'is-active': selectedUser === user.name },
+                  )}
+                  onClick={() => selectNewUser(user.name)}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -229,7 +237,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {products.map(product => (
+              {visidleProducts.map(product => (
                 <tr data-cy="Product" key={product.id}>
                   <td className="has-text-weight-bold" data-cy="ProductId">
                     {product.id}
