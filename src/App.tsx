@@ -24,8 +24,8 @@ const mappedProducts: Product[] = productsFromServer.map(product => ({
 }));
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [products, setProducts] = useState(mappedProducts);
+  const [products] = useState(mappedProducts);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedUserName, setSelectedUserName] = useState('All');
 
   return (
@@ -73,7 +73,8 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={searchQuery}
+                  onChange={event => setSearchQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
