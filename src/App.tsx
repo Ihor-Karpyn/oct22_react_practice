@@ -23,7 +23,7 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              {usersFromServer.map(({ id, name }) => (
+              {usersFromServer.map(({ name }) => (
                 <a
                   data-cy="FilterUser"
                   href="#/"
