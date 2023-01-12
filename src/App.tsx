@@ -1,11 +1,28 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import './App.scss';
+import cn from 'classnames';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
 
 export const App: React.FC = () => {
+  const categoryWithUser = categoriesFromServer.map(category => ({
+    ...category,
+    user: usersFromServer.find(user => user.id === category.ownerId),
+  }));
+
+  const productsWithCat = productsFromServer.map(product => ({
+    ...product,
+    category: categoryWithUser.find(cat => cat.id === product.categoryId),
+  }));
+
+  const productsWithCatAndUser = productsWithCat.map(product => ({
+    ...product,
+    // eslint-disable-next-line max-len
+    user: usersFromServer.find(user => user.id === product.category?.user?.id),
+  }));
+
   return (
     <div className="section">
       <div className="container">
@@ -22,28 +39,22 @@ export const App: React.FC = () => {
               >
                 All
               </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  key="product.id"
+                  data-cy="FilterUser"
+                  href="#/"
+                  className={cn(
+                    {
+                      'is-active': productsWithCatAndUser.every(product => (
+                        product.category?.user?.id === user.id
+                      )),
+                    },
+                  )}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -80,36 +91,17 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
+              {categoryWithUser.map(category => (
+                <a
+                  key={category.id}
+                  data-cy="Category"
+                  className="button mr-2 my-1 is-info"
+                  href="#/"
+                >
+                  {category.title}
+                </a>
+              ))}
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
             </div>
 
             <div className="panel-block">
@@ -187,53 +179,33 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {productsWithCatAndUser.map(product => (
+                <Fragment key={product.id}>
+                  <tr data-cy="Product">
+                    <td className="has-text-weight-bold" data-cy="ProductId">
+                      {product.id}
+                    </td>
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                    <td data-cy="ProductName">{product.name}</td>
+                    <td data-cy="ProductCategory">
+                      {product.category?.icon}
+                      {' '}
+                      -
+                      {' '}
+                      {product.category?.title}
+                    </td>
 
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
+                    <td
+                      data-cy="ProductUser"
+                      className={cn('has-text-link',
+                        { 'has-text-link': product.user?.sex === 'm' },
+                        { 'has-text-danger': product.user?.sex === 'w' })}
+                    >
+                      {product.user?.name}
+                    </td>
+                  </tr>
+                </Fragment>
+              ))}
             </tbody>
           </table>
         </div>
