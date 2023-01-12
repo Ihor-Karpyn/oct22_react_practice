@@ -28,14 +28,13 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUserId, setSelectedUserId] = useState(0);
 
-  let visibleProducts = products.filter(product => (
-    product.name.toLocaleLowerCase()
-      .includes(searchQuery.toLocaleLowerCase())
-  ));
+  const visibleProducts = products.filter(product => {
+    const preparedUserId = selectedUserId || product.category?.ownerId;
+    const preparedSearchQuery = searchQuery.toLocaleLowerCase();
 
-  visibleProducts = visibleProducts
-    .filter(product => (product.category?.ownerId
-        === (selectedUserId || product.category?.ownerId)));
+    return product.name.toLocaleLowerCase().includes(preparedSearchQuery)
+        && product.category?.ownerId === preparedUserId;
+  });
 
   return (
     <div className="section">
