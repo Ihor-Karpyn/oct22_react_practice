@@ -33,7 +33,7 @@ const productForUser: Product[] = productsFromServer.map(product => (
   }
 ));
 
-export const App: React.FC<Product> = () => {
+export const App: React.FC = () => {
   const [products] = useState(productForUser);
 
   const uniqueUser = new Set(products.map(product => product.category?.user));
