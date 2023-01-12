@@ -1,11 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
+import cn from 'classnames';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+import { ProductItem } from './components/ProductItem/ProductItem';
+import { Category } from './types/Category';
+import { User } from './types/User';
+
+const productWithCategory = productsFromServer
+  .map(product => ({
+    ...product,
+    category: categoriesFromServer
+      .find(category => category.id === product.categoryId) as Category,
+  }));
+
+const products = productWithCategory
+  .map(product => ({
+    ...product,
+    owner: usersFromServer
+      .find(user => user.id === product.category?.ownerId) as User,
+  }));
+
+window.console.log(products);
 
 export const App: React.FC = () => {
+  const [selectedUser, setSelectedUser] = useState('');
+  const [inputText, setInputText] = useState('');
+
+  const resetFilters = () => {
+    setSelectedUser('');
+    setInputText('');
+  };
+
+  let filteredProducts = products;
+
+  if (selectedUser !== '') {
+    filteredProducts = filteredProducts
+      .filter(product => product.owner?.name === selectedUser);
+  }
+
+  if (inputText !== '') {
+    filteredProducts = filteredProducts
+      .filter(product => product.name.toLowerCase().includes(inputText));
+  }
+
+  window.console.log(inputText);
+
   return (
     <div className="section">
       <div className="container">
@@ -19,31 +61,26 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={cn({
+                  'is-active': selectedUser === '',
+                })}
+                onClick={() => setSelectedUser('')}
               >
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                  className={cn({
+                    'is-active': user.name === selectedUser,
+                  })}
+                  onClick={() => setSelectedUser(user.name)}
+                >
+                  { user.name }
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -53,21 +90,27 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={inputText}
+                  onChange={event => (
+                    setInputText(event.target.value.toLowerCase().trim())
+                  )}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {inputText !== '' && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setInputText('')}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
@@ -80,36 +123,15 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {categoriesFromServer.map(category => (
+                <a
+                  data-cy="Category"
+                  className="button mr-2 my-1"
+                  href="#/"
+                >
+                  { category.title }
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
@@ -117,7 +139,7 @@ export const App: React.FC = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
-
+                onClick={resetFilters}
               >
                 Reset all filters
               </a>
@@ -126,9 +148,11 @@ export const App: React.FC = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No products matching selected criteria
-          </p>
+          {filteredProducts.length === 0 && (
+            <p data-cy="NoMatchingMessage">
+              No products matching selected criteria
+            </p>
+          )}
 
           <table
             data-cy="ProductTable"
@@ -187,53 +211,9 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
-
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
+              {filteredProducts.map(product => (
+                <ProductItem product={product} key={product.id} />
+              ))}
             </tbody>
           </table>
         </div>
