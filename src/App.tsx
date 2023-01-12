@@ -1,9 +1,9 @@
 import React from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
 
 export const App: React.FC = () => {
   return (
@@ -14,6 +14,25 @@ export const App: React.FC = () => {
         <div className="block">
           <nav className="panel">
             <p className="panel-heading">Filters</p>
+
+            <p className="panel-tabs has-text-weight-bold">
+              <a
+                data-cy="FilterAllUsers"
+                href="#/"
+              >
+                All
+              </a>
+
+              {usersFromServer.map(({ name }) => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                >
+                  {name}
+                </a>
+              ))}
+            </p>
+
             <div className="panel-block">
               <p className="control has-icons-left has-icons-right">
                 <input
@@ -153,6 +172,28 @@ export const App: React.FC = () => {
                 </th>
               </tr>
             </thead>
+
+            <tbody>
+              {productsFromServer.map(({ id, name, categoryId }) => (
+                <tr data-cy="Product">
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {id}
+                  </td>
+
+                  <td data-cy="ProductName">{name}</td>
+                  <td data-cy="ProductCategory">
+                    {`${categoriesFromServer[categoryId - 1].icon} - ${categoriesFromServer[categoryId - 1].title}`}
+                  </td>
+
+                  <td
+                    data-cy="ProductUser"
+                    className="has-text-link"
+                  >
+                    {`${usersFromServer[categoriesFromServer[categoryId - 1].ownerId - 1].name}`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
