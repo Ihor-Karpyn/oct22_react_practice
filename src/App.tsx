@@ -1,9 +1,25 @@
-import React from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+import { Product } from './types/Product';
+import { Category } from './types/Category';
+import { User } from './types/User';
+
+const mappedUsers: User[] = usersFromServer.map(user => ({ ...user }));
+
+const mappedCategories: Category[] = categoriesFromServer.map(category => ({
+  ...category,
+  owner: mappedUsers.find(user => user.id === category.ownerId) || null,
+}));
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mappedProducts: Product[] = productsFromServer.map(product => ({
+  ...product,
+  // eslint-disable-next-line max-len
+  category: mappedCategories.find(category => category.id === product.categoryId) || null,
+}));
 
 export const App: React.FC = () => {
   return (
