@@ -1,9 +1,39 @@
 import React from 'react';
 import './App.scss';
+import { Category, PreparedProduct, User } from './types/types';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
+
+const findUserById = (id: number): User | undefined => (
+  usersFromServer.find((user) => user.id === id)
+);
+
+const getUserById = (id: number): User => {
+  const user = findUserById(id);
+
+  if (!user) {
+    throw Error('User not found');
+  }
+
+  return user;
+};
+
+const getCategoryById = (id: number): Category | undefined => (
+  categoriesFromServer.find(category => (
+    category.id === id))
+);
+
+const prepearedProducts: PreparedProduct[]
+  = productsFromServer.map((product) => ({
+    ...product,
+    ctegory: getCategoryById(product.categoryId),
+  }))
+    .map(product => ({
+      ...product,
+      user: product.ctegory && getUserById(product.ctegory.ownerId),
+    }));
 
 export const App: React.FC = () => {
   return (
@@ -187,21 +217,24 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {prepearedProducts.map(product => (
+                <tr data-cy="Product" key={product.id}>
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {product.id}
+                  </td>
 
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
+                  <td data-cy="ProductName">{product.name}</td>
+                  <td data-cy="ProductCategory">🍺 - Drinks</td>
+
+                  <td
+                    data-cy="ProductUser"
+                    className="has-text-link"
+                  >
+                    Max
+                  </td>
+                </tr>
+              ))}
 
               <tr data-cy="Product">
                 <td className="has-text-weight-bold" data-cy="ProductId">
