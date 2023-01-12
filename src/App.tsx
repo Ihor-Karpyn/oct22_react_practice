@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import './App.scss';
 
 import usersFromServer from './api/users';
@@ -203,6 +204,29 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
+              {mappedProducts.map(product => (
+                <tr data-cy="Product">
+                  <td className="has-text-weight-bold" data-cy="ProductId">
+                    {product.id}
+                  </td>
+
+                  <td data-cy="ProductName">{product.name}</td>
+
+                  <td data-cy="ProductCategory">
+                    {`${product.category?.icon} - ${product.category?.title}`}
+                  </td>
+
+                  <td
+                    data-cy="ProductUser"
+                    className={cn({
+                      'has-text-danger': product.category?.owner?.sex === 'f',
+                      'has-text-link': product.category?.owner?.sex === 'm',
+                    })}
+                  >
+                    {product.category?.owner?.name}
+                  </td>
+                </tr>
+              ))}
               <tr data-cy="Product">
                 <td className="has-text-weight-bold" data-cy="ProductId">
                   1
