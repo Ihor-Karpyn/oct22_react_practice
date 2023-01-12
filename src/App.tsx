@@ -32,7 +32,15 @@ export const App: React.FC = () => {
   if (query) {
     const lowerQuery = query.toLocaleLowerCase();
 
-    visibleUsers = userWithProducts.filter(el => el.name.includes(lowerQuery));
+    visibleUsers = userWithProducts.filter(el => {
+      const stringToCheck = `
+      ${el.name}
+      ${el.category?.title}
+      ${el.category?.product?.name}
+      `;
+
+      return stringToCheck.toLocaleLowerCase().includes(lowerQuery);
+    });
   }
 
   return (
@@ -56,6 +64,7 @@ export const App: React.FC = () => {
                 <a
                   data-cy="FilterAllUsers"
                   href={el.name}
+                  key={el.id}
                 >
                   {el.name}
                 </a>
@@ -103,6 +112,7 @@ export const App: React.FC = () => {
                   data-cy="Category"
                   className="button mr-2 my-1 is-info"
                   href={el.title}
+                  key={el.id}
                 >
                   {el.title}
                 </a>
@@ -186,7 +196,7 @@ export const App: React.FC = () => {
             <tbody>
               {
                 visibleUsers.map(el => (
-                  <tr data-cy="Product">
+                  <tr data-cy="Product" key={el.id}>
                     <td className="has-text-weight-bold" data-cy="ProductId">
                       {el.category?.id}
                     </td>
