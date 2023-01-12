@@ -44,7 +44,7 @@ export const App: React.FC = () => {
               {userWithProducts.map(el => (
                 <a
                   data-cy="FilterAllUsers"
-                  href="id"
+                  href={el.name}
                 >
                   {el.name}
                 </a>
@@ -86,36 +86,15 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {categoryWithProducts.map(el =>
+                <a
+                  data-cy="Category"
+                  className="button mr-2 my-1 is-info"
+                  href={el.title}
+                >
+                  {el.title}
+                </a>
+              )}
             </div>
 
             <div className="panel-block">
