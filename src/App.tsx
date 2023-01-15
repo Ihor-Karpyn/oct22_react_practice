@@ -165,7 +165,11 @@ export const App: React.FC = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
-
+                onClick={() => {
+                  setSelectedCategoriesIds([]);
+                  setSearchQuery('');
+                  setSelectedUserId(0);
+                }}
               >
                 Reset all filters
               </a>
