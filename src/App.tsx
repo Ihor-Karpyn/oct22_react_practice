@@ -101,6 +101,7 @@ export const App: React.FC = () => {
                     data-cy="ClearButton"
                     type="button"
                     className="delete"
+                    onClick={() => setSearchQuery('')}
                   />
                 </span>
               </p>
