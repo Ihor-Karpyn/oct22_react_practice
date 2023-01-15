@@ -16,7 +16,6 @@ const mappedCategories: Category[] = categoriesFromServer.map(category => ({
   owner: mappedUsers.find(user => user.id === category.ownerId) || null,
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mappedProducts: Product[] = productsFromServer.map(product => ({
   ...product,
   // eslint-disable-next-line max-len
@@ -27,13 +26,24 @@ export const App: React.FC = () => {
   const [products] = useState(mappedProducts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUserId, setSelectedUserId] = useState(0);
+  const [selectedCategoriesIds, setSelectedCategoriesIds]
+  = useState<number[]>([]);
 
   const visibleProducts = products.filter(product => {
-    const preparedUserId = selectedUserId || product.category?.ownerId;
-    const preparedSearchQuery = searchQuery.toLocaleLowerCase();
+    const isUserIdMatch = selectedUserId
+      ? product.category?.ownerId === selectedUserId
+      : true;
 
-    return product.name.toLocaleLowerCase().includes(preparedSearchQuery)
-      && product.category?.ownerId === preparedUserId;
+    const isSearchQueryMatch = product.name.toLocaleLowerCase()
+      .includes(searchQuery.toLocaleLowerCase());
+
+    const isCategoriesMatch = selectedCategoriesIds.length === 0
+      ? true
+      : selectedCategoriesIds.includes(product.categoryId);
+
+    return isSearchQueryMatch
+      && isUserIdMatch
+      && isCategoriesMatch;
   });
 
   return (
@@ -113,7 +123,13 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className={cn(
+                  'button is-success mr-6',
+                  {
+                    'is-outlined': selectedCategoriesIds.length !== 0,
+                  },
+                )}
+                onClick={() => setSelectedCategoriesIds([])}
               >
                 All
               </a>
@@ -122,7 +138,22 @@ export const App: React.FC = () => {
                 <a
                   href="#/"
                   data-cy="Category"
-                  className="button mr-2 my-1 is-info"
+                  className={cn(
+                    'button mr-2 my-1',
+                    {
+                      'is-info': selectedCategoriesIds.includes(category.id),
+                    },
+                  )}
+                  onClick={() => {
+                    setSelectedCategoriesIds((prev) => {
+                      if (selectedCategoriesIds.includes(category.id)) {
+                        // eslint-disable-next-line max-len
+                        return prev.filter(id => id !== category.id);
+                      }
+
+                      return [...prev, category.id];
+                    });
+                  }}
                 >
                   {`${category.icon} - ${category.title}`}
                 </a>
